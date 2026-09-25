@@ -1,0 +1,1016 @@
+from email import encoders, message
+from email.mime.base import MIMEBase
+from email.mime.multipart import MIMEMultipart
+import pyttsx3 #pip install pyttsx3
+import speech_recognition as sr #pip install speechRecognition
+from http import client
+from re import M
+import pywhatkit
+import cv2
+import instaloader
+import matplotlib.pyplot as plt
+import cv2
+import numpy as np
+import datetime
+import sys
+# from googletrans import Translator
+import wikipedia #pip install wikipedia
+import webbrowser
+import urllib.request
+import webbrowser as web
+import bs4
+import os
+import pyautogui
+import wolframalpha
+import smtplib
+import requests
+import phonenumbers
+from keyboard import write
+from gtts import gTTS
+# from googletrans import Translator
+from keyboard import press_and_release
+from pyautogui import click
+from bs4 import BeautifulSoup
+from phonenumbers import carrier
+from time import sleep
+from keyboard import press
+from phonenumbers import geocoder
+from pywikihow import RandomHowTo, search_wikihow
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import QMovie
+from Database.GuiProgram.SpeedTestUi import Ui_SpeedTest
+from PyQt5.uic import loadUiType
+import google.generativeai as genai
+
+genai.configure(api_key="AQ.Ab8RN6LxOLuYiYEPuRCMy0s3wDEa2Tvya64BiZxy-yI1iOoKng")
+
+model = genai.GenerativeModel('gemini-2.5-flash')
+
+engine = pyttsx3.init('sapi5')
+voices = engine.getProperty('voices')
+# print(voices[1].id)
+engine.setProperty('voice', voices[0].id)
+
+def speak(audio):
+    print(" ")
+    print(f": {audio}")
+    engine.say(audio)
+    engine.runAndWait()
+    print(" ")
+
+def takeCommand():
+    #It takes microphone input from the user and returns string output
+
+    r = sr.Recognizer()
+    with sr.Microphone() as source:
+        print(": Listening...")
+        r.pause_threshold = 1
+        audio = r.listen(source)
+
+    try:
+        print(": Recognizing...")
+        query = r.recognize_google(audio, language='en-in')
+        print(f": User said: {query}\n")
+
+    except Exception as e:
+        # print(e)
+        print("Say that again please...")
+        return "None"
+    return query
+
+def news():
+    main_url = 'http://newsapi.org/v2/top-headlines?sources=techcrunch&apiKey="YOUR_API_HERE"'
+
+    main_page = requests.get(main_url).json()
+    # print(main_page)
+    articles = main_page["articles"]
+    # print(articles)
+    head = []
+    day=["first","second","third","fourth","fifth","sixth","seventh","eighth","ninth","tenth"]
+    for ar in articles:
+        head.append(ar["title"])
+    for i in range (len(day)):
+        # print(f"today's {day[i]} news is: ", head[i])
+        speak(f"today's {day[i]} news is: {head[i]}")
+
+def DownloadYouTube():
+    from pytube import YouTube
+    from pyautogui import click
+    from pyautogui import hotkey
+    import pyperclip
+    from time import sleep
+
+    sleep(2)
+    click(x=942,y=59)
+    hotkey('ctrl','c')
+    value = pyperclip.paste()
+    Link = str(value) # Important
+
+    def Download(link):
+
+
+        url = YouTube(link)
+        video = url.streams.first()
+
+
+        video.download('D:\\Python\\Jarvis\\Database\\Youtube')
+
+
+    Download(Link)
+
+
+    speak("Done Sir , I Have Downloaded The Video .")
+
+    speak("You Can Go And Check It Out.")
+
+
+    os.startfile('D:\\Python\\Jarvis\\Database\\Youtube')
+
+def SpeedTest(): 
+
+    def run_uit():
+
+        speak("I Am Checking Speed Sir , Wait For A While .")
+
+        import speedtest
+        speed = speedtest.Speedtest()
+        upload = speed.upload()
+        correct_Up = int(int(upload)/800000)
+
+        download = speed.download()
+
+        correct_down = int(int(download)/800000)
+
+        speak(f"Downloading Speed Is {correct_down} M B Per Second .")
+        speak(f"Uploading Speed Is {correct_Up} M B Per Second .")
+
+        exit()
+
+    class MainThread(QThread):
+
+        def __init__(self):
+
+            super(MainThread,self).__init__()
+
+        def run(self):
+            run_uit()
+
+    StartExe = MainThread()
+
+    class StartExecution(QMainWindow):
+
+        def __init__(self):
+
+            super().__init__()
+
+            self.ui = Ui_SpeedTest()
+
+            self.ui.setupUi(self)
+
+            self.ui.label = QMovie("C:\\Users\\admin\\Downloads\\How To Make Jarvis-20220203T043852Z-001\\How To Make Jarvis\\DataBase\\Gui Materials\\speedTest.gif")
+
+            self.ui.gif.setMovie(self.ui.label)
+
+            self.ui.label.start()
+
+            StartExe.start()
+
+    App = QApplication(sys.argv)
+    speedtest = StartExecution()
+    speedtest.show()
+    exit(App.exec_())
+
+def calculate(audio_data):
+    app_id = 'UTLPWL-4LXR7HQGLW'
+    client = wolframalpha.Client(app_id)
+    res = client.query(audio_data)
+    answer = next(res.results).text
+    speak(answer)
+
+def Alarm(query):
+    Timehere = open('C:\\Users\\admin\\PycharmProjects\\ Jarvis\\Data1.txt', 'a')
+    Timehere.write(query)
+    Timehere.close()
+    os.startfile("C:\\Users\\admin\\PycharmProjects\\ Jarvis\\Database\\ExtraPro\\alarm.py")
+
+def restart():
+    speak("Ok Sir    ")
+    speak("Restarting your computer")
+    click()
+    pyautogui.keyDown('alt')
+    pyautogui.press('f4')
+    pyautogui.keyUp('enter')
+    sleep(3)
+    pyautogui.press('r')
+    pyautogui.press('enter')
+
+def Sleep():
+    speak('Ok sir    ')
+    speak("Initializing sleep mode")
+    pyautogui.keyDown('alt')
+    pyautogui.press('f4')
+    pyautogui.press('f4')
+    pyautogui.keyUp('alt')
+    sleep(2)
+    pyautogui.press('s')
+    pyautogui.press('s')
+    pyautogui.press('enter')
+
+def CoronaVirus(Country):
+    countries = str(Country).replace(" ", "")
+
+    url = f"https://www.worldometers.info/coronavirus/country/{countries}/"
+
+    result = requests.get(url)
+
+    soups = bs4.BeautifulSoup(result.text, 'lxml')
+
+    corona = soups.find_all('div', class_='maincounter-number')
+
+    Data = []
+
+    for case in corona:
+        span = case.find('span')
+
+        Data.append(span.string)
+
+    cases, Death, recovored = Data
+
+    speak(f"Cases : {cases}")
+    speak(f"Deaths : {Death}")
+    speak(f"Recovered : {recovored}")
+
+def news():
+    main_url = 'http://newsapi.org/v2/top-headlines?sources=techcrunch&apiKey=45f8eff9c4bb4bdc9d62bdd9f3ec43b6'
+
+    main_page = requests.get(main_url).json()
+    # print(main_page)
+    articles = main_page["articles"]
+    # print(articles)
+    head = []
+    day = ["first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth", "tenth"]
+    for ar in articles:
+        head.append(ar["title"])
+    for i in range(len(day)):
+        # print(f"today's {day[i]} news is: ", head[i])
+        speak(f"today's {day[i]} news is: {head[i]}")
+
+def My_Location():
+    op = "https://google.com/maps/place/16th+Ave,+Gaur+City+2,+Ghaziabad,+Uttar+Pradesh+201009/@28.62255,77.4203379,17z/data=!3m1!4b1!4m5!3m4!1s0x390cefcb0f8c4db9:0xaea9c6228fe3fe69!8m2!3d28.62255!4d77.4225319"
+    speak("Checking.....")
+    web.open(op)
+    ip_addres = requests.get('https://api.ipify.org').text
+    url = 'https://get.geojs.io/v1/ip/geo/' + ip_addres + '.json'
+    geo_q = requests.get(url)
+    geo_d = geo_q.json()
+    state = geo_d['city']
+    country = geo_d['country']
+    speak(f"Sir, You are Now In {state, country}")
+
+def TakeHindi():
+    r = sr.Recognizer()
+    with sr.Microphone() as source:
+        print(": Listening...")
+        r.pause_threshold = 1
+        audio = r.listen(source)
+
+    try:
+        print(": Recognizing...")
+        query = r.recognize_google(audio, language='hi')
+        print(f": User said: {query}\n")
+
+    except Exception as e:
+        # print(e)
+        print("Say that again please...")
+        return "None"
+    return query
+
+# def Tran():
+#     speak('Tell me the line')
+#     line = TakeHindi()
+#     translate = Translator()
+#     result = translate.translate(line)
+#     Text = result.text
+#     speak(f'The Translation For This Line: '+Text)
+
+def walfram(query):
+    api_key = 'EKTJXH-L954GXE4K6'
+    requeter = wolframalpha.Client(api_key)
+    requested = requeter.query(query)
+
+    try:
+        Answer = next(requested.result).text
+        return Answer
+
+    except:
+        speak('An String Value Is Not Answerable .')
+
+def ai_chat(prompt):
+    try:
+        response = model.generate_content(prompt)
+        return response.text
+    except Exception as e:
+        print("ERROR:", e)   # Ye line add kar
+        return "Sorry, I couldn't process that."
+
+def Music():
+    speak("Tell Me The NamE oF The Song!")
+    musicName = takeCommand()
+
+    if 'thunder' in musicName:
+        os.startfile('D:\\Music\\Thunder---Imagine-Dragons(pagolworld.nl).mp3')
+
+    elif 'believer' in musicName:
+        os.startfile('D:\\Music\\Believer(PagalWorld).mp3')
+
+    elif 'stay' in musicName:
+        os.startfile('D:\\Music\\Stay(PagalWorld).mp3')
+
+    elif 'patlamaya' in musicName:
+        os.startfile('D:\\Music\\Patlamaya-Devam(PaglaSongs).mp3')
+
+    elif 'yalgaar' in musicName:
+        os.startfile('D:\\Music\\Yalgaar(PaglaSongs).mp3')
+
+    else:
+        pywhatkit.playonyt(musicName)
+
+    speak("Your Song Has Been Started! , Enjoy Sir!")
+
+def TaskExe(): 
+    speak("HELLO,  I am Jarvis")
+    speak("How Can I help You Sir")
+    while True:
+    # if 1:
+        query = takeCommand().lower()
+
+        # Logic for executing tasks based on query
+        if 'wikipedia' in query:
+            speak('Searching Wikipedia...')
+            query = query.replace("wikipedia", "")
+            results = wikipedia.summary(query, sentences=2)
+            speak("According to Wikipedia")
+            speak(results)
+        
+        elif 'text to image' in query:
+            import text_to_img
+            text_to_img
+
+        elif 'change new screen' in query:
+            press_and_release("ctrl+windows+d")
+        
+        elif 'open youtube' in query:
+            webbrowser.open("youtube.com")
+
+        elif 'you need a break' in query:
+            speak("Ok Sir, You can Call me any time")
+            speak("Just say wake Up Jarvis")
+            break
+        
+        elif 'search on youtube' in query:
+            speak("What sould I search?")
+            command = takeCommand().lower()
+            sleep(5)
+            webbrowser.open("https://www.youtube.com/results?search_query=" + command)
+
+        elif 'calculate' in query:
+            speak('Tell me sir')
+            audio_data = takeCommand()
+            calculate(audio_data)
+
+        
+
+        elif 'take screenshot' in query:
+            speak("sir, please teel me the name for this screenshot file")
+            name = takeCommand().lower()
+            speak("PLEASE SIR HOLD THE SCREEN FOR FEW SECONDS, I AM TALKING SCREEN SHOT")
+            sleep(3)
+            img = pyautogui.screenshot()
+            img.save(f"{name}.png")
+            speak("Sir I am done. the screenshot saved in our main folder")
+
+        elif 'Jor se bolo' in query:
+            speak("jai mata di")
+
+        elif 'whatsapp message' in query:
+            name = query.replace("send whatsapp", "")
+            name = name.replace("send", "")
+            name = name.replace("message", "")
+            name = name.replace("java", "")
+            name = name.replace("jarvis", "")
+            name = name.replace("to", "")
+            Name = str(name)
+            speak(f"Whats The message for {name}")
+            MSG = takeCommand().lower()
+            from automation import whatsappmsg
+            whatsappmsg(Name,MSG)
+
+        elif 'hindi chat' in query:
+            name = query.replace("hindi chat", "")
+            name = name.replace("hindi", "")
+            name = name.replace("chat", "")
+            name = name.replace("java", "")
+            name = name.replace("jarvis", "")
+            name = name.replace("to", "")
+            Name = str(name)
+            speak(f"Whats The message for {name}")
+            HINDIMISG = TakeHindi()
+            from automation import hindiMSG
+            hindiMSG(name, HINDIMISG)
+
+
+        elif "open camera" in query:
+            cap = cv2.VideoCapture(0)
+            while True:
+                ret,img = cap.read()
+                cv2.imshow('webcam', img)
+                k = cv2.waitKey(50)
+                if k==27:
+                    break;
+            cap.release()
+            cv2.destroyAllWindows()
+
+        elif 'whatsapp call' in query:
+            from automation import whatsappcall
+            name = query.replace("call ", "")
+            name = name.replace("to", "")
+            name = name.replace("jarvis ", "")
+            Name = str(name)
+            whatsappcall(name)
+
+        elif 'chat' in query:
+            speak("With Whom ?")
+            name = takeCommand().lower()
+            from  automation import whatsappchat
+            whatsappchat(name)
+
+        elif 'video call' in query:
+            from automation import whatsappvideocall
+            name = query.replace("video", "")
+            name = name.replace("call", "")
+            name = name.replace("to", "")
+            Name = str(name)
+            whatsappvideocall(name)
+
+        elif 'corona cases' in query:
+
+            speak("Which Country's Information ?")
+
+            cccc = takeCommand()
+            CoronaVirus(cccc)
+
+        elif 'download' in query:
+            DownloadYouTube()
+
+        elif 'turn on Alexa mod' in query:
+            from Database.Homeauto.usealexa import alef
+            alef()
+
+        elif 'take text for a image' in query:
+            import test
+            test
+
+        elif 'turn of Alexa mod' in query:
+            from  Database.Homeauto.usealexa import alefs
+            alex()
+
+        elif 'input to Alexa' in query:
+            from Database.Homeauto.alexa import alex
+            alex()
+
+        elif 'disconnect to alexa' in query:
+            from Database.Homeauto.alexa import disalex
+            disalex()
+
+        elif 'eye use to move' in query:
+            import eyemouse
+            eyemouse   
+
+        elif 'remember that' in query:
+            remeberMsg = query.replace("remember that", "")
+            remeberMsg = remeberMsg.replace("jarvis", "")
+            remeberMsg = remeberMsg.replace("java", "")
+            speak("Tell Me to remind you that :"+remeberMsg)
+            remeber = open('data.txt', 'w')
+            remeber.write(remeberMsg)
+            remeber.close()
+
+        elif 'what do you remember' in query:
+            remeber = open('data.txt', 'r')
+            speak("You tell me that" + remeber.read())
+
+        elif 'open google' in query:
+            webbrowser.open("google.com")
+
+        elif 'search on Google' in query:
+            speak("sir, what should i search on google")
+
+            cm = takeCommand().lower()
+            webbrowser.open(f"{cm}")
+
+        elif 'tell me news' in query:
+            speak("please wait sir, I am feteching the latest news")
+            news()
+
+        elif 'switch the window' in query:
+            pyautogui.keyDown("alt")
+            pyautogui.press("tab")
+            sleep(1)
+            pyautogui.keyUp("alt")
+
+        elif 'open stackoverflow' in query:
+            webbrowser.open("stackoverflow.com")
+
+        elif 'email to' in query:
+            speak("Sir Please Tell Me the Person Name Again")
+            name = takeCommand().lower()
+            speak("Sir Please Write The Email Correctly")
+            personemail = input("Sir Please Write The Email Correctly :")
+            speak("Do You want To Attach a file")
+            Op = takeCommand().lower()
+            if 'yes' in Op:
+                email = 'anshpandey.it12@gmail.com'
+                password = 'xdgxskanaffavqdt'
+                send_to_email = f'{personemail}'
+                speak("okay Sir What is The Subject for this email")
+                query1 = takeCommand().lower()  
+                subject = query1
+                speak("and Sir, What is the message for this email")
+                query2 = takeCommand().lower()
+                message_ = query2
+                speak("sir please enter the correct path of the file :")
+                path = input("Enter the path:")
+
+                speak("please wait,I am sending email")
+
+                msg = MIMEMultipart()
+                msg['Form'] = email
+                msg['To'] = send_to_email
+                msg['Subject'] = subject
+
+                msg.attach(MIMEMultipart(message_, 'plain'))
+                filename = os.path.basename(path)
+                attachment = open(path, 'rb')
+                part = MIMEBase('application', 'octet-stream')
+                part.set_payload(attachment.read())
+                encoders.encode_base64(part)
+                part.add_header('Content-Disposition', "attachment; filename= %s" % filename)
+
+                msg.attach(part)
+                server = smtplib.SMTP('smtp.gmail.com', 587)
+                server.starttls()
+                server.login(email, password)
+                text = msg.as_string()
+                server.sendmail(email, send_to_email, text)
+                server.quit()
+                speak(f"email has Beem Sent to {name}")
+            else:
+                email = 'anshpandey.it12@gmail.com'
+                password = 'xdgxskanaffavqdt'
+                send_to_email = f'{personemail}'
+                speak("Sir, What is the message for this email")
+                query = takeCommand().lower()
+                message_ = query
+
+                server = smtplib.SMTP('smtp.gmail.com', 587)
+                server.starttls()
+                server.login(email, password)
+                server.sendmail(email, send_to_email, message_)
+                server.quit()
+                speak(f"email has Been Sent to {name}")
+                
+                
+        elif 'home screen' in query:
+            press_and_release('windows + m')
+
+        elif 'minimize' in query:
+            press_and_release('windows + m')
+
+        elif 'show start' in query:
+            press('windows')
+
+        elif 'settings' in query:
+            press_and_release("windows + i")
+
+        elif 'close chrome' in query:
+            os.system("TASKKILL /F /im Chrome.exe")
+
+        elif 'wins' in query:
+            press_and_release('windows + s')
+
+        elif 'widject' in query:
+            press_and_release('window + h')
+
+        # elif "translator" in query:
+        #     Tran()
+
+
+
+        elif 'restore windows' in query:
+            press_and_release('windows + Shift + M')
+
+        elif 'the time' in query:
+            strTime = datetime.datetime.now().strftime("%H:%M:%S")
+            speak(f"Sir, the time is {strTime}")
+
+        elif 'code' in query:
+            codePath = "C:\\Users\\admin\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Visual Studio Code\\"
+            os.startfile(codePath)
+
+        elif 'volume up' in query:
+            pyautogui.press("volumeup")
+
+        elif 'volume down' in query:
+            pyautogui.press("volumedown")
+
+        elif 'vloume turnoff' in query:
+            pyautogui.press("volumemute")
+
+
+        elif 'hide all file' in query or 'hide thise file' in query or 'visible for everyone' in query:
+            speak("Sir please tell me you want to hide this folder or make it visible to every one")
+            condition1 = takeCommand().lower()
+            if "hide" in condition1:
+                os.system("attrib +h /s /d")
+                speak("Sir all files our hide in this folder are now hidden.")
+
+            elif "visible" in condition1:
+                os.system("attrib -h /s /d")
+                speak("Sir all files our unhide n this folder for know.")
+
+            elif "leave it" in condition1 or "lieve for know" in condition1:
+                speak("Ok sir")
+
+        elif "weather" in query:
+            speak("Name the state to see the teamperature")
+            tem = input("Name the state to see the teamperature: ")
+            search = f"teamperature in {tem}"
+            url = f"https://www.google.com/search?q={search}"
+            r = requests.get(url)
+            data = BeautifulSoup(r.text, "html.parser")
+            temp = data.find("div", class_="BNeawe").text
+            speak(f"current {search} is {temp}")
+
+        elif "call" in query:
+            from automation import calls
+            calls()
+
+        elif 'track phone number' in query:
+            speak("Write Number to track :")
+            num = input("Write Number to track")
+            anNumber = phonenumbers.parse(num)
+            yourLocation = geocoder.description_for_number(anNumber, "en")
+            speak(yourLocation)
+            print(yourLocation)
+
+            service_provider = phonenumbers.parse(num)
+            speak(carrier.name_for_number(service_provider, "en"))
+            print(carrier.name_for_number(service_provider, "en"))
+
+        elif 'you need a break' in query:
+            speak("Ok Sir Just say wake up jarvis")
+            break
+
+        elif 'take photo' in query:
+            cam = cv2.VideoCapture(0)
+            cv2.namedWindow("test")
+            img_counter = 0
+            while True:
+                ret, frame = cam.read()
+                if not ret:
+                    print("failed to grab frame")
+                    break
+                cv2.imshow("test", frame)
+                k = cv2.waitKey(1)
+                if k % 256 == 27:
+                    # ESC pressed
+                    print("Escape hit, closing...")
+                    break
+                elif k % 256 == 32:
+                    # SPACE pressed
+                    img_name = "opencv_frame_{}.png".format(img_counter)
+                    cv2.imwrite(img_name, frame)
+                    print("{} written!".format(img_name))
+                    img_counter += 1
+            cam.release()
+            cv2.destroyAllWindows()
+
+        elif 'music' in query:
+            Music()
+
+        elif 'my location' in query:
+            My_Location()
+
+        elif 'stop' in query:
+            press('space bar')
+
+        elif 'resume' in query:
+            press('space bar')
+
+        elif 'full screen' in query:
+            press('f')
+
+        elif 'skip' in query:
+            press('l')
+
+        elif 'back' in query:
+            press('j')
+
+        elif 'increase' in query:
+            press_and_release('SHIFT + .')
+
+        elif 'decrease' in query:
+            press_and_release('SHIFT + ,')
+
+        elif 'mute' in query:
+            press('m')
+
+        elif 'previous video' in query:
+            press_and_release('SHIFT + p')
+
+        elif 'next video' in query:
+            press_and_release('SHIFT + n')
+
+        elif 'open search' in query:
+            click(x=824, y=131)
+            speak("What sould I search")
+            search = takeCommand().lower()
+            write(search)
+            sleep(1)
+            press('enter')
+
+        elif 'unmute' in query:
+            press('m')
+
+        elif 'open youtube' in query:
+            web.open('https://www.youtube.com/')
+
+
+        elif 'instagram profile' in query:
+            speak("sir please enter the user name correctly")
+            name = input("Enter user name here:")
+            webbrowser.open(f"www.instagram.com/{name}")
+            speak(f"Sir here is the profile of the user {name}")
+            sleep(5)
+            speak("sir would you like to download profile picture of the account.")
+            condition = takeCommand().lower()
+            if "yes" in condition:
+                mod = instaloader.Instaloader()
+                mod.download_profile(name, profile_pic_only=True)
+                speak("I am done sir , your pic has download")
+            else:
+                pass
+
+        elif 'open mobile camera' in query:
+            URL = "http://192.168.29.86:8080/shot.jpg"
+            while True:
+                img_arr = np.array(bytearray(urllib.request.urlopen(URL).read()),dtype=np.uint8)
+                img = cv2.imdecode(img_arr,-1)
+                cv2.imshow('IPWecam',img)
+                q = cv2.waitKey(1)
+                if q==ord("q"):
+                    break;
+
+            cv2.destroyAllWindows()
+
+        elif 'how to' in query:
+            speak('Getting Data From The Internet !') 
+            op = query.replace('jarvis', '')
+            op = query.replace('Jarvis', '')
+            max_result = 1
+            how_to_func = search_wikihow(op,max_result)
+            assert len(how_to_func) ==1
+            speak(how_to_func[0].summary)
+
+        # '''elif 'alarm' in query:
+        #     speak("Sir please tell the time  to set alram for example, set alarm to five thurty am")
+        #     tt = takeCommand()
+        #     tt = tt.replace("set alram to ", "")
+        #     tt = tt.upper()
+        #     Myalarm.alarm(tt)'''
+
+        # elif 'alarm' in query:
+        #     speak("Enter The Time !")
+        #     time = input(": Enter The Time :")
+
+        #     while True:
+        #         Time_Ac = datetime.datetime.now()
+        #         now = Time_Ac.strftime("%H:%M:%S")
+
+        #         if now == Time_Ac:
+        #             speak("Time To Waktee Up Sir!")
+        #             playsound('C:\\Users\\admin\\PycharmProjects\\ Jarvis\\Database\\Sounds\\1.mp3')
+        #             speak("Alarm Closed!")
+
+        #         elif now>time:
+        #             break
+
+
+        elif 'photos of mars' in query:
+            speak("Fetching mars photos....")   
+            from Nasa import MarsImages
+            MarsImages()
+
+        elif 'space news' in query:
+            speak("Tell Me the date  for news extracting Process")
+            speak("Please enter the date like 2021-1-1 first year then month then date:")
+            from Nasa import NasaNews
+            value = input("Please enter the date like 2021-1-1 first year then month then date:")
+            sleep(5)
+            NasaNews(value)
+
+        elif 'minecraft' in query:
+            from Database.GameAuto.minecraft import mine
+            mine()
+
+        # elif 'send email to' in query:
+        #     try:
+        #         speak("please write the email correctly")
+        #         com = input("Sender email write:")
+        #         speak("What should I say?")
+        #         content = takeCommand()
+        #         to = f"{com}"
+        #         sendEmail(to, content)
+        #         speak("Email has been sent!")
+        #     except Exception as e:
+        #         print(e)
+        #         speak("Sorry my friend Ansh bhai. I am not able to send this email")
+
+        elif 'where is' in query:
+            from automation import GoogleMaps
+            Place = query.replace("where is", "")
+            Place = Place.replace("jarvis", "")
+            Place = Place.replace("Jarvis", "")
+            Place = Place.replace("Java", "")
+            GoogleMaps(Place)
+
+        elif 'new tab' in query:
+            press_and_release('ctrl+t')
+
+        elif 'close tab' in query:
+            press_and_release('ctrl+w')
+
+        elif 'new window' in query:
+            press_and_release('ctrl + n')
+
+        elif 'history' in query:
+            press_and_release('ctrl + h')
+
+        elif 'download' in query:
+            press_and_release('ctrl + j')
+
+        elif 'bookmark' in query:
+            press_and_release('ctrl + d')
+            press('enter')
+
+
+        elif 'incognito' in query:
+            press_and_release('ctrl + shift + n')
+
+
+
+        elif 'switch tab' in query:
+            tab = query.replace("switch tab", "")
+            Tab = tab.replace("to", "")
+            num = Tab
+            bb = f'ctrl + {num}'
+            press_and_release(bb)
+
+        elif 'about' in query:
+            from Nasa import Astro
+            query = query.replace("jarvis ","")
+            query = query.replace("about ","")
+            Astro(query)
+
+        elif 'real math' in query:
+            from Database.GameAuto.skysmash import start
+            start()
+
+        elif 'close' in query:
+            from Database.GameAuto.skysmash import shutdown
+            shutdown()
+
+        elif 'connect' in query:
+            from Database.remoteauto.sauto import connectan
+            connectan()
+
+        elif 'open' in query:
+            name = query.replace("open ", "")
+            NameA = str(name)
+
+            if 'youtube' in query:
+                web.open("https://www.youtube.com/")
+
+            elif 'instagram' in query:
+                web.open("https://www.instagram.com/")
+
+            elif 'facebook' in query:
+                web.open("https://www.facebook.com/")
+
+            else:
+                string = "https://www." + NameA + ".com"
+                string_2 = string.replace(" ", "")
+                web.open(string_2)
+
+        
+        elif 'sleep' in query or 'sleep mode' in query:
+            Sleep()
+
+        elif "write a note" in query:
+            from automation import notepadAuto
+            notepadAuto()
+
+        elif 'dismiss' in query:
+            from automation import closeNotepad
+            closeNotepad()
+
+        elif 'online' in query:
+            from automation import onlineClass
+            speak('Tell Me The Class Sir')
+            Class = takeCommand().lower()
+
+            onlineClass(Class)
+
+        elif 'speed test' in query:
+            SpeedTest()
+
+        elif 'quit' in query:
+                speak("BY sir thanks for time yuo give to me")
+                quit()
+
+        else:
+            answer = ai_chat(query)
+            print(answer)
+            speak(answer)
+TaskExe()
+# recognizer = cv2.face.LBPHFaceRecognizer_create() # Local Binary Patterns Histograms
+# recognizer.read('trainer/trainer.yml')   #load trained model
+# cascadePath = "haarcascade_frontalface_default.xml"
+# faceCascade = cv2.CascadeClassifier(cascadePath) #initializing haar cascade for object detection approach
+
+# font = cv2.FONT_HERSHEY_SIMPLEX #denotes the font type
+
+
+# id = 2 #number of persons you want to Recognize
+
+
+# names = ['','ansh']  #names, leave first empty bcz counter starts from 0
+
+
+# cam = cv2.VideoCapture(0, cv2.CAP_DSHOW) #cv2.CAP_DSHOW to remove warning
+# cam.set(3, 640) # set video FrameWidht
+# cam.set(4, 480) # set video FrameHeight
+
+# # Define min window size to be recognized as a face
+# minW = 0.1*cam.get(3)
+# minH = 0.1*cam.get(4)
+
+# # flag = True
+
+# while True:
+
+#     ret, img =cam.read() #read the frames using the above created object
+
+#     converted_image = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)  #The function converts an input image from one color space to another
+
+#     faces = faceCascade.detectMultiScale( 
+#         converted_image,
+#         scaleFactor = 1.2,
+#         minNeighbors = 5,
+#         minSize = (int(minW), int(minH)),
+#        )
+
+#     for(x,y,w,h) in faces:
+
+#         cv2.rectangle(img, (x,y), (x+w,y+h), (0,255,0), 2) #used to draw a rectangle on any image
+
+#         id, accuracy = recognizer.predict(converted_image[y:y+h,x:x+w]) #to predict on every single image
+
+#         # Check if accuracy is less them 100 ==> "0" is perfect match 
+#         if (accuracy < 100):
+#             id = names[id]
+#             accuracy = "  {0}%".format(round(100 - accuracy))
+#             TaskExe()
+
+#         else:
+#             id = "unknown"
+#             accuracy = "  {0}%".format(round(100 - accuracy))
+#             speak("user authentication is failed")
+#             break
+        
+#         cv2.putText(img, str(id), (x+5,y-5), font, 1, (255,255,255), 2)
+#         cv2.putText(img, str(accuracy), (x+5,y+h-5), font, 1, (255,255,0), 1)  
+    
+#     cv2.imshow('camera',img) 
+
+#     k = cv2.waitKey(10) & 0xff # Press 'ESC' for exiting video
+#     if k == 27:
+#         break
+
+# # Do a bit of cleanup
+# print("Thanks for using this program, have a good day.")
+# cam.release()
+# cv2.destroyAllWindows()
+
